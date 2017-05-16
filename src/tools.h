@@ -31,10 +31,10 @@ public:
   /**
   * A helper method to calculate RMSE.
   */
-  void load_waypoints(Eigen::VectorXd& xvals_res, Eigen::VectorXd& yvals_res);
+  void load_waypoints(vector<double>& xvals, vector<double>&  yvals);
   void test();
-  void show_reference_trajectory(const Eigen::VectorXd& xvals, const Eigen::VectorXd& yvals);
-  Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
+  void show_reference_trajectory(const vector<double>& xvals, const vector<double>&  yvals);
+  Eigen::VectorXd polyfit(const vector<double>& xvals_vec, const vector<double>&  yvals_vec,
                           int order);
   double polyeval(Eigen::VectorXd coeffs, double x);
 
