@@ -9,7 +9,9 @@ using namespace std;
 namespace plt = matplotlibcpp;
 
 
-Tools::Tools() {}
+Tools::Tools() {
+	load_waypoints(m_xvals, m_yvals);
+}
 
 Tools::~Tools() {}
 
@@ -95,6 +97,45 @@ double Tools::polyeval(Eigen::VectorXd coeffs, double x) {
     result += coeffs[i] * pow(x, i);
   }
   return result;
+}
+
+/**
+ * get some of the closetest way points for the vehicle.
+ * @param x vehicle position x
+ * @param y vehicle position y
+ * @param phi vehicle orientation
+ * @param N number of reference waypoints to select
+ * @param conversion whether to convert the map coordinates to vehicle coordinate
+ * @output xvals slected waypoints's position
+ * @output yvals slected waypoints's position
+ */
+void Tools::get_reference_points(vector<double>& xvals, vector<double>&  yvals, double x, double y, double psi, int N, bool conversion){
+	const int total_size = m_xvals.size();
+	int start_pos = -1;
+	double clostest_dist = -1;
+	for(int i=0; i< total_size; i++ ){
+		double dist = pow(x -m_xvals[i], 2) + pow(y -m_yvals[i], 2);
+		if(clostest_dist == -1 || dist < clostest_dist ){
+			clostest_dist = dist;
+			start_pos = i;
+		}
+	}
+
+	int num =0;
+	while(num < N){
+		xvals.push_back(m_xvals[start_pos]);
+		yvals.push_back(m_yvals[start_pos]);
+
+		start_pos++;
+		if(start_pos == total_size){
+			start_pos = 0;
+		}
+		num++;
+	}
+	if(!conversion){
+		return;
+	}
+
 }
 void Tools::test(){
 	vector<double> xvals;

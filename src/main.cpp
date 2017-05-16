@@ -40,9 +40,9 @@ int main() {
   MPC mpc;
 
   Tools tool;
-  tool.test();
+//  tool.test();
 
-  h.onMessage([&mpc](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  h.onMessage([&mpc, &tool](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -69,6 +69,9 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
+          vector<double> xvals;
+          vector<double> yvals;
+          tool.get_reference_points(xvals,yvals, px,py,psi,5,true);
           double steer_value = 0;
           double throttle_value = 0;
 

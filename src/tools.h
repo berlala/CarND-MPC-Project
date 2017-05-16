@@ -29,7 +29,7 @@ public:
   virtual ~Tools();
 
   /**
-  * A helper method to calculate RMSE.
+  * load way points for the track
   */
   void load_waypoints(vector<double>& xvals, vector<double>&  yvals);
   void test();
@@ -38,6 +38,16 @@ public:
                           int order);
   double polyeval(Eigen::VectorXd coeffs, double x);
 
+  /**
+    * get some of the closetest way points for the vehicle
+    */
+  void get_reference_points(vector<double>& xvals, vector<double>&  yvals, double x, double y, double psi,int N=5, bool conversion=false);
+private:
+  /**
+  * reference way points for the track
+  */
+  vector<double> m_xvals;
+  vector<double> m_yvals;
 
 };
 
