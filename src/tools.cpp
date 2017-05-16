@@ -18,7 +18,7 @@ void Tools::load_waypoints(Eigen::VectorXd& xvals_res, Eigen::VectorXd& yvals_re
 
 	vector<double> xvals;
 	vector<double>  yvals;
-	string in_file_name_ = "./lake_track_waypoints.csv";
+	string in_file_name_ = "../lake_track_waypoints.csv";
 	ifstream in_file_(in_file_name_.c_str(), ifstream::in);
 	cout << "process file" << in_file_name_ <<  endl;
 	if (!in_file_.is_open()) {
@@ -51,7 +51,7 @@ void Tools::load_waypoints(Eigen::VectorXd& xvals_res, Eigen::VectorXd& yvals_re
 	for (int i = 0; i < xvals.size(); i++) {
 		xvals_res[i] = xvals[i];
 		yvals_res[i] = yvals[i];
-		cout<<xvals_res[i] <<","<< yvals_res[i] <<endl;
+//		cout<<xvals_res[i] <<","<< yvals_res[i] <<endl;
 	}
 
 }
@@ -64,6 +64,7 @@ void Tools::show_reference_trajectory(const Eigen::VectorXd& xvals, const Eigen:
 	}
 	plt::title("referecne trajectory");
 	plt::plot(xvals_vec, yvals_vec);
+	plt::plot(xvals_vec, yvals_vec, "ro");
 	plt::show();
 
 }

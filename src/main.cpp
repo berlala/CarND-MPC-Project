@@ -40,7 +40,7 @@ int main() {
   MPC mpc;
 
   Tools tool;
-  tool.test();
+//  tool.test();
 
   h.onMessage([&mpc](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
@@ -69,12 +69,17 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
-          double steer_value;
-          double throttle_value;
+          double steer_value = 0;
+          double throttle_value = 0;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
           msgJson["throttle"] = throttle_value;
+
+          std::vector<double> next_x = {1.0,10.0, 20.0};
+          std::vector<double> next_y = {0,0,0};
+          msgJson["next_x"] = next_x;
+          msgJson["next_y"] = next_y;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           std::cout << msg << std::endl;
           // Latency
