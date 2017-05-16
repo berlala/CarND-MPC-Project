@@ -3,3 +3,9 @@ build
 tags
 .editorconfig
 .DS_Store
+.cproject
+.project
+.settings/
+.~lock.lake_track_waypoints.csv#
+simulator/
+
