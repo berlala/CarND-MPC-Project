@@ -135,8 +135,44 @@ void Tools::get_reference_points(vector<double>& xvals, vector<double>&  yvals, 
 	if(!conversion){
 		return;
 	}
+	transform_map_coord(xvals,yvals, x, y, psi);
 
 }
+/**
+ * Transform the points from map coordiante to the vehicle coordinate system.
+ * @param xvals, map coordinate, x position
+ * @param yvals, map coordinate, y position
+ * @param vehicle_x, vehicle position
+ * @param vehicle_y, vehicle position
+ * @param vehicle_theta, vehicle orientation
+ * @output xvals, transformed output, x position
+ * @output yvals, transformed output, y position
+ */
+void Tools::transform_map_coord(vector<double>& xvals,vector<double>& yvals, double vehicle_x, double vehicle_y, double vehicle_theta) {
+
+	vector<double> transformed_x;
+	vector<double> transformed_y;
+	int total_size = xvals.size();
+
+	for (int i = 0; i < total_size; i++) {
+
+		double new_x;
+		double new_y;
+
+		double cos_theta = cos(vehicle_theta - M_PI / 2);
+		double sin_theta = sin(vehicle_theta - M_PI / 2);
+		new_x = -(xvals[i] - vehicle_x) * sin_theta + (yvals[i] - vehicle_y) * cos_theta;
+		new_y = -(xvals[i] - vehicle_x) * cos_theta - (yvals[i] - vehicle_y) * sin_theta;
+
+		transformed_x.push_back(new_x);
+		transformed_y.push_back(new_y);
+	}
+	xvals= transformed_x;
+	yvals = transformed_y;
+
+	return;
+}
+
 void Tools::test(){
 	vector<double> xvals;
 	vector<double> yvals;

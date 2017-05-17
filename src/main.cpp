@@ -69,9 +69,9 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
-          vector<double> xvals;
-          vector<double> yvals;
-          tool.get_reference_points(xvals,yvals, px,py,psi,5,true);
+          vector<double> xvals_reference;
+          vector<double> yvals_reference;
+          tool.get_reference_points(xvals_reference,yvals_reference, px,py,psi,5,true);
           double steer_value = 0;
           double throttle_value = 0;
 
@@ -79,10 +79,10 @@ int main() {
           msgJson["steering_angle"] = steer_value;
           msgJson["throttle"] = throttle_value;
 
-          std::vector<double> next_x = {1.0,10.0, 20.0};
-          std::vector<double> next_y = {0,0,0};
-          msgJson["next_x"] = next_x;
-          msgJson["next_y"] = next_y;
+//          std::vector<double> next_x = {1.0,10.0, 20.0};
+//          std::vector<double> next_y = {0,0,0};
+          msgJson["next_x"] = xvals_reference;
+          msgJson["next_y"] = yvals_reference;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           std::cout << msg << std::endl;
           // Latency

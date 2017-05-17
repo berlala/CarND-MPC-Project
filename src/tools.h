@@ -42,6 +42,17 @@ public:
     * get some of the closetest way points for the vehicle
     */
   void get_reference_points(vector<double>& xvals, vector<double>&  yvals, double x, double y, double psi,int N=5, bool conversion=false);
+  /**
+   * Transform the points from map coordiante to the vehicle coordinate system.
+   * @param xvals, map coordinate, x position
+   * @param yvals, map coordinate, y position
+   * @param vehicle_x, vehicle position
+   * @param vehicle_y, vehicle position
+   * @param vehicle_theta, vehicle orientation
+   * @output xvals, transformed output, x position
+   * @output yvals, transformed output, y position
+   */
+  void transform_map_coord(vector<double>& xvals,vector<double>& yvals, double vehicle_x, double vehicle_y, double vehicle_theta);
 private:
   /**
   * reference way points for the track
