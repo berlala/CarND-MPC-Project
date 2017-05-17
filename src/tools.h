@@ -36,8 +36,6 @@ public:
   void show_reference_trajectory(const vector<double>& xvals, const vector<double>&  yvals);
   Eigen::VectorXd polyfit(const vector<double>& xvals_vec, const vector<double>&  yvals_vec,
                           int order);
-  double polyeval(Eigen::VectorXd coeffs, double x);
-
   /**
     * get some of the closetest way points for the vehicle
     */

@@ -69,9 +69,21 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
-          vector<double> xvals_reference;
-          vector<double> yvals_reference;
-          tool.get_reference_points(xvals_reference,yvals_reference, px,py,psi,5,true);
+          cout<<"psi" <<psi <<endl;
+          vector<double> next_x;
+          vector<double> next_y;
+          tool.get_reference_points(next_x,next_y, px,py,psi,5,true);
+
+          Eigen::VectorXd state(4);
+
+		  state << px, py, psi, v;
+
+		  auto coeffs = tool.polyfit(next_x, next_y, 3);
+          vector<double> mpc_x;
+          vector<double> mpc_y;
+          mpc.Solve(state, coeffs,mpc_x,mpc_y);
+          tool.transform_map_coord(mpc_x, mpc_y, px,py,psi);
+
           double steer_value = 0;
           double throttle_value = 0;
 
@@ -79,10 +91,11 @@ int main() {
           msgJson["steering_angle"] = steer_value;
           msgJson["throttle"] = throttle_value;
 
-//          std::vector<double> next_x = {1.0,10.0, 20.0};
-//          std::vector<double> next_y = {0,0,0};
-          msgJson["next_x"] = xvals_reference;
-          msgJson["next_y"] = yvals_reference;
+
+          msgJson["next_x"] = next_x;
+          msgJson["next_y"] = next_y;
+          msgJson["mpc_x"] = next_x;
+          msgJson["mpc_y"] = next_y;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           std::cout << msg << std::endl;
           // Latency

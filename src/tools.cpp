@@ -90,14 +90,6 @@ Eigen::VectorXd Tools::polyfit(const vector<double>& xvals_vec, const vector<dou
   auto result = Q.solve(yvals);
   return result;
 }
-// Evaluate a polynomial.
-double Tools::polyeval(Eigen::VectorXd coeffs, double x) {
-  double result = 0.0;
-  for (int i = 0; i < coeffs.size(); i++) {
-    result += coeffs[i] * pow(x, i);
-  }
-  return result;
-}
 
 /**
  * get some of the closetest way points for the vehicle.
