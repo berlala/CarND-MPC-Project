@@ -95,13 +95,11 @@ Eigen::VectorXd Tools::polyfit(const vector<double>& xvals_vec, const vector<dou
  * get some of the closetest way points for the vehicle.
  * @param x vehicle position x
  * @param y vehicle position y
- * @param phi vehicle orientation
  * @param N number of reference waypoints to select
- * @param conversion whether to convert the map coordinates to vehicle coordinate
  * @output xvals slected waypoints's position
  * @output yvals slected waypoints's position
  */
-void Tools::get_reference_points(vector<double>& xvals, vector<double>&  yvals, double x, double y, double psi, int N, bool conversion){
+void Tools::get_reference_points(vector<double>& xvals, vector<double>&  yvals, double x, double y,  int N){
 	const int total_size = m_xvals.size();
 	int start_pos = -1;
 	double clostest_dist = -1;
@@ -124,11 +122,6 @@ void Tools::get_reference_points(vector<double>& xvals, vector<double>&  yvals, 
 		}
 		num++;
 	}
-	if(!conversion){
-		return;
-	}
-	transform_map_coord(xvals,yvals, x, y, psi);
-
 }
 /**
  * Transform the points from map coordiante to the vehicle coordinate system.

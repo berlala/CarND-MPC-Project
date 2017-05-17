@@ -39,7 +39,7 @@ public:
   /**
     * get some of the closetest way points for the vehicle
     */
-  void get_reference_points(vector<double>& xvals, vector<double>&  yvals, double x, double y, double psi,int N=5, bool conversion=false);
+  void get_reference_points(vector<double>& xvals, vector<double>&  yvals, double x, double y, int N=5);
   /**
    * Transform the points from map coordiante to the vehicle coordinate system.
    * @param xvals, map coordinate, x position

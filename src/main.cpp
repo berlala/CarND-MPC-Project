@@ -72,17 +72,25 @@ int main() {
           cout<<"psi" <<psi <<endl;
           vector<double> next_x;
           vector<double> next_y;
-          tool.get_reference_points(next_x,next_y, px,py,psi,5,true);
+          const int ref_num = 5;
+          tool.get_reference_points(next_x,next_y, px,py,ref_num);
 
           Eigen::VectorXd state(4);
 
 		  state << px, py, psi, v;
 
-		  auto coeffs = tool.polyfit(next_x, next_y, 3);
+		  Eigen::VectorXd coeffs = tool.polyfit(next_x, next_y, 3);
+
+		  for(int i =0; i<next_x.size();i++ ){
+			  cout<<"next_y" << next_y[i]<<endl;
+			  next_y[i] = mpc.polyeval(coeffs,next_x[i]);
+			  cout<<"next_y_after_fit" << next_y[i]<<endl;
+		  }
+
           vector<double> mpc_x;
           vector<double> mpc_y;
           mpc.Solve(state, coeffs,mpc_x,mpc_y);
-          tool.transform_map_coord(mpc_x, mpc_y, px,py,psi);
+
 
           double steer_value = 0;
           double throttle_value = 0;
@@ -92,8 +100,10 @@ int main() {
           msgJson["throttle"] = throttle_value;
 
 
-          msgJson["next_x"] = next_x;
-          msgJson["next_y"] = next_y;
+          tool.transform_map_coord(next_x, next_y, px,py,psi);
+          tool.transform_map_coord(mpc_x, mpc_y, px,py,psi);
+//          msgJson["next_x"] = next_x;
+//          msgJson["next_y"] = next_y;
           msgJson["mpc_x"] = next_x;
           msgJson["mpc_y"] = next_y;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
