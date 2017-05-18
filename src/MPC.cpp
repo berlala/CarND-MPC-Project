@@ -2,12 +2,13 @@
 #include <cppad/cppad.hpp>
 #include <cppad/ipopt/solve.hpp>
 #include "Eigen-3.3/Eigen/Core"
+#include "math.h"
 
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
 size_t N = 25;
-double dt = 0.05;
+double dt = 0.3;
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -165,7 +166,14 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 	double v = state[3];
 	//here we use an approximation to compute cte
 	double cte = polyeval(coeffs, x) - y;
-	double epsi = psi - atan(coeffs[1] + (2 * coeffs[2] * x) + (3 * coeffs[3]* (x*x)));
+	double normalized_psi = psi;
+	while (normalized_psi> M_PI/2) {
+		normalized_psi-=M_PI;
+	}
+	while (normalized_psi<-M_PI/2) {
+		normalized_psi+=M_PI;
+	}
+	double epsi = normalized_psi - atan(coeffs[1] + (2 * coeffs[2] * x) + (3 * coeffs[3]* (x*x)));
 
 	// Set the number of model variables (includes both states and inputs).
 	// For example: If the state is a 4 element vector, the actuators is a 2

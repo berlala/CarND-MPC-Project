@@ -70,10 +70,9 @@ int main() {
           *
           */
           cout<<"psi" <<psi <<endl;
-          vector<double> next_x;
-          vector<double> next_y;
-          const int ref_num = 5;
-          tool.get_reference_points(next_x,next_y, px,py,ref_num);
+          auto next_x = ptsx;
+          auto next_y = ptsy;
+
 
           Eigen::VectorXd state(4);
 
@@ -102,10 +101,11 @@ int main() {
 
           tool.transform_map_coord(next_x, next_y, px,py,psi);
           tool.transform_map_coord(mpc_x, mpc_y, px,py,psi);
-//          msgJson["next_x"] = next_x;
-//          msgJson["next_y"] = next_y;
-          msgJson["mpc_x"] = next_x;
-          msgJson["mpc_y"] = next_y;
+          msgJson["next_x"] = next_x;
+          msgJson["next_y"] = next_y;
+          msgJson["mpc_x"] = mpc_x;
+          msgJson["mpc_y"] = mpc_y;
+
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           std::cout << msg << std::endl;
           // Latency
