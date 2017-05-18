@@ -88,11 +88,14 @@ int main() {
 
           vector<double> mpc_x;
           vector<double> mpc_y;
-          mpc.Solve(state, coeffs,mpc_x,mpc_y);
+          auto mpc_state = mpc.Solve(state, coeffs,mpc_x,mpc_y);
 
 
           double steer_value = 0;
           double throttle_value = 0;
+
+          steer_value = mpc_state[6];
+          throttle_value = mpc_state[7];
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
