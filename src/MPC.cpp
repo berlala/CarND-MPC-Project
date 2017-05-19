@@ -70,7 +70,7 @@ public:
 		}
 		// Minimize the value gap between sequential actuations.
 		for (int i = 0; i < N - 2; i++) {
-			fg[0] += 500* CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
+			fg[0] += CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
 			fg[0] += CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
 		}
 
@@ -166,14 +166,8 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 	double v = state[3];
 	//here we use an approximation to compute cte
 	double cte = polyeval(coeffs, x) - y;
-	double normalized_psi = psi;
-	while (normalized_psi> M_PI/2) {
-		normalized_psi-=M_PI;
-	}
-	while (normalized_psi<-M_PI/2) {
-		normalized_psi+=M_PI;
-	}
-	double epsi = normalized_psi - atan(coeffs[1] + (2 * coeffs[2] * x) + (3 * coeffs[3]* (x*x)));
+
+	double epsi = psi-atan(coeffs[1] + (2 * coeffs[2] * x) + (3 * coeffs[3]* (x*x)));
 
 	// Set the number of model variables (includes both states and inputs).
 	// For example: If the state is a 4 element vector, the actuators is a 2
@@ -278,6 +272,11 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 
 	// Check some of the solution values
 	ok &= solution.status == CppAD::ipopt::solve_result<Dvector>::success;
+
+	if(!ok){
+		std::cout << "Fatal error: failed to find optimal parameters!!!" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 
 	// Cost
 	auto cost = solution.obj_value;

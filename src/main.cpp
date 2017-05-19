@@ -56,61 +56,56 @@ int main() {
         string event = j[0].get<string>();
         if (event == "telemetry") {
           // j[1] is the data JSON object
-          vector<double> ptsx = j[1]["ptsx"];
-          vector<double> ptsy = j[1]["ptsy"];
+          vector<double> next_x = j[1]["ptsx"];
+          vector<double> next_y = j[1]["ptsy"];
           double px = j[1]["x"];
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
 
-          /*
-          * TODO: Calculate steeering angle and throttle using MPC.
-          *
-          * Both are in between [-1, 1].
-          *
-          */
-          cout<<"psi" <<psi <<endl;
-          auto next_x = ptsx;
-          auto next_y = ptsy;
-
-
-          Eigen::VectorXd state(4);
-
-		  state << px, py, psi, v;
+		  //transform to vehicle coordinate system
+		  tool.transform_map_coord(next_x, next_y, px, py, psi);
+		  px = 0;
+		  py = 0;
+		  psi = 0;
 
 		  Eigen::VectorXd coeffs = tool.polyfit(next_x, next_y, 3);
 
 		  for(int i =0; i<next_x.size();i++ ){
-			  cout<<"next_y" << next_y[i]<<endl;
+//			  cout<<"next_y" << next_y[i]<<endl;
 			  next_y[i] = mpc.polyeval(coeffs,next_x[i]);
-			  cout<<"next_y_after_fit" << next_y[i]<<endl;
+//			  cout<<"next_y_after_fit" << next_y[i]<<endl;
 		  }
 
           vector<double> mpc_x;
           vector<double> mpc_y;
-          auto mpc_state = mpc.Solve(state, coeffs,mpc_x,mpc_y);
+          Eigen::VectorXd state(4);
+          state << px, py, psi, v;
+          auto vars = mpc.Solve(state, coeffs,mpc_x,mpc_y);
+
+          Eigen::VectorXd new_state(6);
+          new_state << vars[0], vars[1], vars[2], vars[3], vars[4], vars[5];
+          std::cout << new_state << std::endl;
 
 
           double steer_value = 0;
           double throttle_value = 0;
 
-          steer_value = mpc_state[6];
-          throttle_value = mpc_state[7];
+          steer_value = vars[6];
+          throttle_value = vars[7];
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
           msgJson["throttle"] = throttle_value;
 
 
-          tool.transform_map_coord(next_x, next_y, px,py,psi);
-          tool.transform_map_coord(mpc_x, mpc_y, px,py,psi);
           msgJson["next_x"] = next_x;
           msgJson["next_y"] = next_y;
           msgJson["mpc_x"] = mpc_x;
           msgJson["mpc_y"] = mpc_y;
 
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
-          std::cout << msg << std::endl;
+
           // Latency
           // The purpose is to mimic real driving conditions where
           // the car does actuate the commands instantly.
@@ -122,6 +117,7 @@ int main() {
           // SUBMITTING.
           this_thread::sleep_for(chrono::milliseconds(100));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+          std::cout << msg << std::endl;
         }
       } else {
         // Manual driving

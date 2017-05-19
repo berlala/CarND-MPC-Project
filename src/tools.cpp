@@ -23,7 +23,7 @@ void Tools::load_waypoints(vector<double>& xvals, vector<double>&  yvals) {
 	cout << "process file" << in_file_name_ <<  endl;
 	if (!in_file_.is_open()) {
 		cerr << "Cannot open input file: " << in_file_name_ << endl;
-		exit(EXIT_FAILURE);
+		return;
 	}
 
 	string line;
