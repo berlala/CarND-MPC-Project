@@ -7,7 +7,7 @@
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
-size_t N = 20;
+size_t N = 12;
 double dt = 0.05;
 
 // This value assumes the model presented in the classroom is used.
@@ -174,23 +174,23 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 	static double last_a = 0;
 
 	//incorporate 100ms latency
-	for(int i=0; i< 1;i++){
-		double dt = 0.1;
-		double new_x = x + v*cos(psi)*dt;
-		double new_y = y + v*sin(psi)*dt;
-		double new_psi = psi + v/Lf * last_delta * dt;
-		double new_v = v + last_a * dt;
-		double new_cte = polyeval(coeffs, x) - y + v * sin(epsi) * dt;
-		double new_epsi = psi - atan(coeffs[1] + 2 * coeffs[2] * x + 3 * coeffs[3]*pow(x,2)) + v/Lf * last_delta * dt;
 
-		x = new_x;
-		y = new_y;
-		psi = new_psi;
-		v = new_v;
-		cte = new_cte;
-		epsi = new_epsi;
+	double dt = 0.1;
+	double new_x = x + v*cos(psi)*dt;
+	double new_y = y + v*sin(psi)*dt;
+	double new_psi = psi + v/Lf * last_delta * dt;
+	double new_v = v + last_a * dt;
+	double new_cte = cte + v * sin(epsi) * dt;
+	double new_epsi = epsi + v/Lf * last_delta * dt;
 
-	}
+	x = new_x;
+	y = new_y;
+	psi = new_psi;
+	v = new_v;
+	cte = new_cte;
+	epsi = new_epsi;
+
+
 
 	// Set the number of model variables (includes both states and inputs).
 	// For example: If the state is a 4 element vector, the actuators is a 2
@@ -316,8 +316,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 		mpc_y.push_back(solution.x[y_start + i]);
 	}
 	const int skip_state_num = 0;
-//	last_delta = solution.x[delta_start];
-//	last_a = solution.x[a_start];
+
 	return {solution.x[x_start + 1+ skip_state_num],   solution.x[y_start + 1 + skip_state_num],
 		solution.x[psi_start + 1+ skip_state_num], solution.x[v_start + 1+ skip_state_num],
 		solution.x[cte_start + 1+ skip_state_num], solution.x[epsi_start + 1+ skip_state_num],
