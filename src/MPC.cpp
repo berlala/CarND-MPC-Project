@@ -7,8 +7,8 @@
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
-size_t N = 25;
-double dt = 0.3;
+size_t N = 20;
+double dt = 0.05;
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -164,10 +164,8 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 	double y = state[1];
 	double psi = state[2];
 	double v = state[3];
-	//here we use an approximation to compute cte
-	double cte = polyeval(coeffs, x) - y;
-
-	double epsi = psi-atan(coeffs[1] + (2 * coeffs[2] * x) + (3 * coeffs[3]* (x*x)));
+	double cte = state[4];
+	double epsi = state[5];
 
 	// Set the number of model variables (includes both states and inputs).
 	// For example: If the state is a 4 element vector, the actuators is a 2
@@ -292,8 +290,9 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 		mpc_x.push_back(solution.x[x_start + i]);
 		mpc_y.push_back(solution.x[y_start + i]);
 	}
-	return {solution.x[x_start + 1],   solution.x[y_start + 1],
-		solution.x[psi_start + 1], solution.x[v_start + 1],
-		solution.x[cte_start + 1], solution.x[epsi_start + 1],
-		solution.x[delta_start],   solution.x[a_start]};
+	const int skip_state_num = 0;
+	return {solution.x[x_start + 1+ skip_state_num],   solution.x[y_start + 1 + skip_state_num],
+		solution.x[psi_start + 1+ skip_state_num], solution.x[v_start + 1+ skip_state_num],
+		solution.x[cte_start + 1+ skip_state_num], solution.x[epsi_start + 1+ skip_state_num],
+		solution.x[delta_start+ skip_state_num],   solution.x[a_start+ skip_state_num]};
 }

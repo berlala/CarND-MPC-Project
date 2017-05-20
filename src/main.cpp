@@ -62,30 +62,31 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+          std::cout << " x,"<< px <<" y,"<< py <<" psi,"<< psi <<" v,"<< v <<std::endl;
 
 		  //transform to vehicle coordinate system
 		  tool.transform_map_coord(next_x, next_y, px, py, psi);
-		  px = 0;
-		  py = 0;
-		  psi = 0;
 
 		  Eigen::VectorXd coeffs = tool.polyfit(next_x, next_y, 3);
 
 		  for(int i =0; i<next_x.size();i++ ){
-//			  cout<<"next_y" << next_y[i]<<endl;
 			  next_y[i] = mpc.polyeval(coeffs,next_x[i]);
-//			  cout<<"next_y_after_fit" << next_y[i]<<endl;
 		  }
 
           vector<double> mpc_x;
           vector<double> mpc_y;
-          Eigen::VectorXd state(4);
-          state << px, py, psi, v;
+          Eigen::VectorXd state(6);
+          //after coordinate transformation, the vehicle's position (0,0)
+          double cte = mpc.polyeval(coeffs, 0)-0;
+          //the derivative is coeffs[1] + (2 * coeffs[2] * x) + (3 * coeffs[3]* (x*x)),
+          //since x==0,it's equal to coeffs[1]
+          double epsi = 0-atan(double(coeffs[1]));
+          state << 0, 0, 0, v, cte,epsi;
           auto vars = mpc.Solve(state, coeffs,mpc_x,mpc_y);
 
-          Eigen::VectorXd new_state(6);
-          new_state << vars[0], vars[1], vars[2], vars[3], vars[4], vars[5];
-          std::cout << new_state << std::endl;
+          vars[6] = -vars[6];
+          std::cout << std::endl << " x,"<< vars[0] <<" y,"<< vars[1] <<" psi,"<< vars[2] <<" v,"<< vars[3] <<" cte," \
+        		  << vars[4] <<" epsi,"<< vars[5] <<" steer,"<< vars[6] <<" a,"<< vars[7] << std::endl<< std::endl;
 
 
           double steer_value = 0;
@@ -105,6 +106,7 @@ int main() {
           msgJson["mpc_y"] = mpc_y;
 
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
+          std::cout << msg << std::endl;
 
           // Latency
           // The purpose is to mimic real driving conditions where
@@ -115,9 +117,8 @@ int main() {
           //
           // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
           // SUBMITTING.
-          this_thread::sleep_for(chrono::milliseconds(100));
+//          this_thread::sleep_for(chrono::milliseconds(100));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-          std::cout << msg << std::endl;
         }
       } else {
         // Manual driving
