@@ -167,6 +167,14 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 	double cte = state[4];
 	double epsi = state[5];
 
+	//incorporate 100ms latency
+	for(int i=0; i< 2;i++){
+		double dt = 0.05;
+		double new_x = x + v*cos(psi)*dt;
+		double new_y = y + v*sin(psi)*dt;
+		cte = polyeval(x)
+	}
+
 	// Set the number of model variables (includes both states and inputs).
 	// For example: If the state is a 4 element vector, the actuators is a 2
 	// element vector and there are 10 timesteps. The number of variables is:
@@ -290,7 +298,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 		mpc_x.push_back(solution.x[x_start + i]);
 		mpc_y.push_back(solution.x[y_start + i]);
 	}
-	const int skip_state_num = 0;
+	const int skip_state_num = 2;
 	return {solution.x[x_start + 1+ skip_state_num],   solution.x[y_start + 1 + skip_state_num],
 		solution.x[psi_start + 1+ skip_state_num], solution.x[v_start + 1+ skip_state_num],
 		solution.x[cte_start + 1+ skip_state_num], solution.x[epsi_start + 1+ skip_state_num],
