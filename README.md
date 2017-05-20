@@ -15,6 +15,7 @@ The goals / steps of this project are the following:
 
 [Here](https://youtu.be/iE_wM8v7wNs) is the video that demonstrates the vehicle controlled by MPC successfully drives around the track in the simulator.
 
+![mpc](https://github.com/LevinJ/CarND-Advanced-Lane-Lines/blob/master/thresholding.png) 
 
 ### The Vehicle Model  
 
