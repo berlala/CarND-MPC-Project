@@ -50,7 +50,7 @@ In this project, I find that N = 12, dt= 0.05 to be the optimal value when the v
 
 As expected, if we are to increase dt (like 0.1), the vehicle model will be further inaccurate and cause the driving to be unstable.
 
-Increasing N (for example 25) has a negative impact I didn't expect, it causes the driving to be less stable. With hindsight, I think this is because when we increase N, the solver will need to optimize more variables and failed to obtain less optimal results within the fixed 0.05 second cpu time. As a result, I find that smaller N actually can achieve better driving behavior.  
+Increasing N (for example 25) has a negative impact I didn't expect, it causes the driving to be less stable. With hindsight, I think this is because when we increase N, the solver will need to optimize more variables and failed to obtain optimal variables within the fixed 0.05 second cpu time. As a result, I find that smaller N actually can achieve better driving behavior.  
 
 
 ### Polynomial Fitting and MPC Preprocessing  
