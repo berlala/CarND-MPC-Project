@@ -40,6 +40,9 @@ size_t epsi_start = cte_start + N;
 size_t delta_start = epsi_start + N;
 size_t a_start = delta_start + N - 1;
 
+constexpr double coeff_derivative_delta = 100.;
+constexpr double coeff_derivative_a = 100.;
+
 class FG_eval {
 public:
 	// Fitted polynomial coefficients
@@ -70,8 +73,8 @@ public:
 		}
 		// Minimize the value gap between sequential actuations.
 		for (int i = 0; i < N - 2; i++) {
-			fg[0] += CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
-			fg[0] += CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
+			fg[0] += coeff_derivative_delta* CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
+			fg[0] += coeff_derivative_a*CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
 		}
 
 		//
@@ -167,12 +170,26 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 	double cte = state[4];
 	double epsi = state[5];
 
+	static double last_delta = 0;
+	static double last_a = 0;
+
 	//incorporate 100ms latency
-	for(int i=0; i< 2;i++){
-		double dt = 0.05;
+	for(int i=0; i< 1;i++){
+		double dt = 0.1;
 		double new_x = x + v*cos(psi)*dt;
 		double new_y = y + v*sin(psi)*dt;
-		cte = polyeval(x)
+		double new_psi = psi + v/Lf * last_delta * dt;
+		double new_v = v + last_a * dt;
+		double new_cte = polyeval(coeffs, x) - y + v * sin(epsi) * dt;
+		double new_epsi = psi - atan(coeffs[1] + 2 * coeffs[2] * x + 3 * coeffs[3]*pow(x,2)) + v/Lf * last_delta * dt;
+
+		x = new_x;
+		y = new_y;
+		psi = new_psi;
+		v = new_v;
+		cte = new_cte;
+		epsi = new_epsi;
+
 	}
 
 	// Set the number of model variables (includes both states and inputs).
@@ -298,7 +315,9 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 		mpc_x.push_back(solution.x[x_start + i]);
 		mpc_y.push_back(solution.x[y_start + i]);
 	}
-	const int skip_state_num = 2;
+	const int skip_state_num = 0;
+//	last_delta = solution.x[delta_start];
+//	last_a = solution.x[a_start];
 	return {solution.x[x_start + 1+ skip_state_num],   solution.x[y_start + 1 + skip_state_num],
 		solution.x[psi_start + 1+ skip_state_num], solution.x[v_start + 1+ skip_state_num],
 		solution.x[cte_start + 1+ skip_state_num], solution.x[epsi_start + 1+ skip_state_num],
