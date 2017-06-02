@@ -7,7 +7,7 @@
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
-size_t N = 8;
+size_t N = 12;
 double dt = 0.05;
 
 // This value assumes the model presented in the classroom is used.
@@ -41,7 +41,7 @@ size_t delta_start = epsi_start + N;
 size_t a_start = delta_start + N - 1;
 
 constexpr double coeff_derivative_delta = 500.;
-constexpr double coeff_derivative_a = 100.;
+constexpr double coeff_derivative_a = 1.;
 constexpr double coeff_delta = 100.;
 constexpr double coeff_a = 1.;
 
@@ -171,7 +171,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 	double v = state[3];
 	double cte = state[4];
 	double epsi = state[5];
-
+/*
 	static double last_delta = 0;
 	static double last_a = 0;
 
@@ -191,6 +191,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 	v = new_v;
 	cte = new_cte;
 	epsi = new_epsi;
+	*/
 
 
 
