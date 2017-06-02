@@ -40,7 +40,7 @@ size_t epsi_start = cte_start + N;
 size_t delta_start = epsi_start + N;
 size_t a_start = delta_start + N - 1;
 
-constexpr double coeff_derivative_delta = 500.;
+constexpr double coeff_derivative_delta = 3000.;
 constexpr double coeff_derivative_a = 1.;
 constexpr double coeff_delta = 100.;
 constexpr double coeff_a = 1.;
@@ -174,6 +174,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 /*
 	static double last_delta = 0;
 	static double last_a = 0;
+	std::cout<<"last delata and a: " << last_delta <<" , "<< last_a << std::endl;
 
 	//incorporate 100ms latency
 
@@ -192,6 +193,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 	cte = new_cte;
 	epsi = new_epsi;
 	*/
+
 
 
 
@@ -319,6 +321,9 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 		mpc_y.push_back(solution.x[y_start + i]);
 	}
 	const int skip_state_num = 0;
+
+//	last_delta = solution.x[delta_start+ skip_state_num];
+//	last_a = solution.x[a_start+ skip_state_num];
 
 	return {solution.x[x_start + 1+ skip_state_num],   solution.x[y_start + 1 + skip_state_num],
 		solution.x[psi_start + 1+ skip_state_num], solution.x[v_start + 1+ skip_state_num],

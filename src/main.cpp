@@ -48,7 +48,7 @@ int main() {
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
     string sdata = string(data).substr(0, length);
-    cout << sdata << endl;
+//    cout << sdata << endl;
     if (sdata.size() > 2 && sdata[0] == '4' && sdata[1] == '2') {
       string s = hasData(sdata);
       if (s != "") {
@@ -63,6 +63,20 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
           std::cout << " x,"<< px <<" y,"<< py <<" psi,"<< psi <<" v,"<< v <<std::endl;
+
+          //handle latency
+          static double last_delta = 0;
+          static double last_a = 0;
+          double dt = 0.1;
+          const double Lf = 2.67;
+
+          double mileswmeters = (1609.0/3600);
+          px = px + v*mileswmeters *cos(psi)*dt;
+          py = py + v*mileswmeters *sin(psi)*dt;
+          psi = psi + (v*mileswmeters)/Lf * last_delta * dt;
+          v = v + (last_a * dt)/1609.0 ;
+
+          std::cout << "After latency:  x,"<< px <<" y,"<< py <<" psi,"<< psi <<" v,"<< v <<std::endl;
 
 		  //transform to vehicle coordinate system
 		  tool.transform_map_coord(next_x, next_y, px, py, psi);
@@ -83,10 +97,12 @@ int main() {
           double epsi = 0-atan(double(coeffs[1]));
           state << 0, 0, 0, v, cte,epsi;
           auto vars = mpc.Solve(state, coeffs,mpc_x,mpc_y);
+          last_delta = vars[6];
+          last_a = vars[7];
 
           vars[6] = -vars[6];
-          std::cout << std::endl << " x,"<< vars[0] <<" y,"<< vars[1] <<" psi,"<< vars[2] <<" v,"<< vars[3] <<" cte," \
-        		  << vars[4] <<" epsi,"<< vars[5] <<" steer,"<< vars[6] <<" a,"<< vars[7] << std::endl<< std::endl;
+//          std::cout << std::endl << " x,"<< vars[0] <<" y,"<< vars[1] <<" psi,"<< vars[2] <<" v,"<< vars[3] <<" cte," \
+//        		  << vars[4] <<" epsi,"<< vars[5] <<" steer,"<< vars[6] <<" a,"<< vars[7] << std::endl<< std::endl;
 
 
           double steer_value = 0;
@@ -106,7 +122,7 @@ int main() {
           msgJson["mpc_y"] = mpc_y;
 
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
-          std::cout << msg << std::endl;
+//          std::cout << msg << std::endl;
 
           // Latency
           // The purpose is to mimic real driving conditions where
@@ -117,7 +133,7 @@ int main() {
           //
           // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
           // SUBMITTING.
-//          this_thread::sleep_for(chrono::milliseconds(100));
+          this_thread::sleep_for(chrono::milliseconds(100));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {
