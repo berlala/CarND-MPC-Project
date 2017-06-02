@@ -7,7 +7,7 @@
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
-size_t N = 12;
+size_t N = 8;
 double dt = 0.05;
 
 // This value assumes the model presented in the classroom is used.
@@ -26,7 +26,7 @@ const double Lf = 2.67;
 // The reference velocity is set to 40 mph.
 double ref_cte = 0;
 double ref_epsi = 0;
-double ref_v = 40;
+double ref_v = 65;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
@@ -40,8 +40,10 @@ size_t epsi_start = cte_start + N;
 size_t delta_start = epsi_start + N;
 size_t a_start = delta_start + N - 1;
 
-constexpr double coeff_derivative_delta = 100.;
+constexpr double coeff_derivative_delta = 500.;
 constexpr double coeff_derivative_a = 100.;
+constexpr double coeff_delta = 100.;
+constexpr double coeff_a = 1.;
 
 class FG_eval {
 public:
@@ -68,8 +70,8 @@ public:
 
 		// Minimize the use of actuators.
 		for (int i = 0; i < N - 1; i++) {
-			fg[0] += CppAD::pow(vars[delta_start + i], 2);
-			fg[0] += CppAD::pow(vars[a_start + i], 2);
+			fg[0] += coeff_delta* CppAD::pow(vars[delta_start + i], 2);
+			fg[0] += coeff_a * CppAD::pow(vars[a_start + i], 2);
 		}
 		// Minimize the value gap between sequential actuations.
 		for (int i = 0; i < N - 2; i++) {
