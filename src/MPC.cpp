@@ -23,7 +23,7 @@ double dt = 0.05;
 const double Lf = 2.67;
 
 // Both the reference cross track and orientation errors are 0.
-// The reference velocity is set to 40 mph.
+// The reference velocity is set to 40 mph = 65km/h
 double ref_cte = 0;
 double ref_epsi = 0;
 double ref_v = 65;
@@ -31,6 +31,7 @@ double ref_v = 65;
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
 // when one variable starts and another ends to make our lifes easier.
+// 每个状态和控制量开始的index戳，因为求解器将所有状态和控制量保存在一个一维向量中
 size_t x_start = 0;
 size_t y_start = x_start + N;
 size_t psi_start = y_start + N;
@@ -202,6 +203,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,vector<d
 	// element vector and there are 10 timesteps. The number of variables is:
 	//
 	// 4 * 10 + 2 * 9
+	// 6个状态， 2个控制量
 	size_t n_vars =  N * 6 + (N - 1) * 2;
 	// TODO: Set the number of constraints
 	size_t n_constraints =  N * 6;
